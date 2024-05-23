@@ -38,7 +38,7 @@ all.lev.options <- ncvar_get(model.data.x, "lev")
 all.time.options <- ncvar_get(model.data.x, "time")
 
 
-# assigning model values to average (spatially) for each observational data point -------------------
+# assigning model values to compile (spatially) for each observational data point -------------------
 # at the grid-box resolution (1 grid box, n=4)
 find_model_latitude <- function(df, all_lat_options) {
   df <- df %>%
@@ -68,14 +68,6 @@ find_model_longitude <- function(df, all_long_options) {
   return(df)
 }
 obs.data.mod.res <- find_model_longitude(obs.data.1, all.long.options)
-
-# extracting latitudes and longitudes that will correspond with observational data
-Obs.Lats <- unlist(strsplit(obs.data.mod.res$Model_Latitude_Values, ", "))
-Obs.Long <- unlist(strsplit(obs.data.mod.res$Model_Longitude_Values, ", "))
-
-# Remove duplicates and sort the vectors
-Obs.Lats <- sort(unique(Obs.Lats))
-Obs.Long <- sort(unique(Obs.Long))
 
 # at 1/3 the model resolution (9 grid boxes, n =16)
 find_model_latitude <- function(df, all_lat_options) {
@@ -107,16 +99,8 @@ find_model_longitude <- function(df, all_long_options) {
 }
 obs.data.third.mod.res <- find_model_longitude(obs.data.1, all.long.options)
 
-# extracting latitudes and longitudes that will correspond with observational data
-Obs.Lats.third <- unlist(strsplit(obs.data.third.mod.res$Model_Latitude_Values, ", "))
-Obs.Long.third <- unlist(strsplit(obs.data.third.mod.res$Model_Longitude_Values, ", "))
 
-# Remove duplicates and sort the vectors
-Obs.Lats.third <- sort(unique(Obs.Lats.third))
-Obs.Long.third <- sort(unique(Obs.Long.third))
-
-
-# Convert whole array to dataframe and calculate averages at annual resolution (whatever resolution you specify) this passed cross examination in Panoply and using single-point extractions averaged over time period specified ----------- 
+# Convert netcdf array to dataframe and calculate averages at specified resolution -- this passed cross examination in Panoply and using single-point extractions averaged over time period specified(tried annual and single-day) ----------- 
 # Extract the necessary variable
 #variable <- ncvar_get(model.data.x, "ncl_a1")
 variable <- ncvar_get(model.data.x, "FETOTSRF")
@@ -132,18 +116,12 @@ FESOLSRF <- variable.sol[ , , ]
 annual_average <- apply(FETOTSRF, c(1, 2), mean, na.rm = TRUE)  # Calculate mean over time dimension
 annual_average.sol <- apply(FESOLSRF, c(1, 2), mean, na.rm = TRUE)  
 
-# Combine latitude and longitude data
-coords <- expand.grid(latitude = all.lat.options, longitude = all.long.options)
-coords$annual_average <- as.vector(annual_average)
-coords.sol <- expand.grid(latitude = all.lat.options, longitude = all.long.options)
-coords.sol$annual_average.sol <- as.vector(annual_average.sol)
-
-# Or create a dataframe with latitude, longitude, and annual average
+# Create a dataframe with latitude, longitude, and annual average
 coords <- data.frame(latitude = rep(all.lat.options, each = length(all.long.options)),
                      longitude = rep(all.long.options, length(all.lat.options)),
                       annual_average = as.vector(annual_average))
 coords_wide <- pivot_wider(coords, names_from = longitude, values_from = annual_average)
-coords_wide <- spread(coords, key = longitude, value = annual_average) #note that the final first column is filled in with the latitude values 
+coords_wide <- spread(coords, key = longitude, value = annual_average) 
 rownames(coords_wide) <- all.lat.options 
 coords_wide <- coords_wide[,-1] #need to check annual value with the manual script -- worked for ncl_a1 and FETOTSRF 
 
@@ -161,7 +139,7 @@ coords_wide.sol <- coords_wide.sol[,-1] #need to check annual value with the man
 model_latitude_values <- obs.data.mod.res$Model_Latitude_Values[[1]]
 model_longitude_values <- obs.data.mod.res$Model_Longitude_Values[[1]]
 
-# Extract values from coords_wide based on latitude and longitude values
+# For Loop to extract values from model data array based on latitude and longitude values specified in observational data
 # Initialize an empty vector to store the mod averages for each row
 mod_medians <- numeric(nrow(obs.data.mod.res))
 
@@ -288,7 +266,7 @@ ggplot(obs.mod.comparison, aes(x = Obs_Fe, y = Mod_Fe)) +
 ggplot(obs.mod.comparison, aes(x = Obs_sol_Fe, y = Mod_sol_Fe)) +
   geom_point() +  # Add points
   geom_smooth(method = "lm", se = FALSE) +  # Add linear regression line without confidence interval
-  labs(x = "Observed Soluble [Fe] (ng m-3)", y = "ModeledSoluble [Fe] (ng m-3)", title = "Observed vs. Modeled Soluble Fe")  +
+  labs(x = "Observed Soluble [Fe] (ng m-3)", y = "Modeled Soluble [Fe] (ng m-3)", title = "Observed vs. Modeled Soluble Iron Concentrations")  +
   stat_poly_eq(formula = y ~ x, 
                eq.with.lhs = "italic(y)~`=`~",
                aes(label = paste(..eq.label.., sep = "*\", \"*")), 
