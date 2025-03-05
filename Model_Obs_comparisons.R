@@ -31,7 +31,7 @@ obs.data$Longitude <- sapply(obs.data$Longitude, convert_longitude)
 library(ncdf4);library(dplyr);library(tidyr)
 
 # when multiple timepoints still exist -- find averages and standard deviations over time
-generate_mean_values_from_netcdf <- function(file_directory, var1_name, var2_name) {
+generate_median_values_from_netcdf <- function(file_directory, var1_name, var2_name) {
   # Open the NetCDF file
   nc_data <- nc_open(file_directory)
   
@@ -52,8 +52,8 @@ generate_mean_values_from_netcdf <- function(file_directory, var1_name, var2_nam
   # XXX <- variable[, , 1, ]  # Assuming dimensions are (longitude, latitude, level, time), 56 corresponds to surface
   
   # Calculate mean values for the specified variables
-  mean_var1 <- apply(variable1, c(1, 2), mean, na.rm = TRUE)
-  mean_var2 <- apply(variable2, c(1, 2), mean, na.rm = TRUE)
+  mean_var1 <- apply(variable1, c(1, 2), median, na.rm = TRUE)
+  mean_var2 <- apply(variable2, c(1, 2), median, na.rm = TRUE)
   
   # Calculate mean values for the specified variables
   sd_var1 <- apply(variable1, c(1, 2), sd, na.rm = TRUE)
@@ -170,7 +170,7 @@ read_in_netcdf <- function(file_directory, var1_name, var2_name) {
 # v1 (PD) INDCOAL0.2-RESICOAL0.2-WOOD10-OIL38-FINEFIRE33
 #result <- generate_mean_values_from_netcdf("C:\\Users\\heplaas\\OneDrive - North Carolina State University\\Collaborations\\Coal Fly Ash\\data\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL0.2-WOOD10-OIL38.cam.h2.2009-2011_PD.nc", "FETOTSRF", "FESOLSRF")
 # NO SOIL STATE VERSIONS
-result <- generate_mean_values_from_netcdf("D:\\CoalFlyAsh\\no_soil_state_firex1_runs\\no_soil_state_an+du_cheyenne_bb_derecho.h2_v1.nc", "FETOTSRF", "FESOLSRF")
+result <- generate_median_values_from_netcdf("C:\\Users\\heplaas\\OneDrive - North Carolina State University\\Collaborations\\Coal Fly Ash\\data\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL0.2-WOOD10-OIL38.cam.h2.2009-2011_PD.nc", "FETOTSRF", "FESOLSRF")
 coords_wide.med.v1 <- result[[1]]
 coords_wide.sol.med.v1 <- result[[2]]
 coords_wide.med.v1_sd <- result[[3]]
@@ -180,20 +180,21 @@ coords_wide.sol.med.v1_sd <- result[[4]]
 #result <- read_in_netcdf("D:\\CoalFlyAsh\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL0.2-WOOD10-OIL38_2009-2011.h2.BBx1_ANx2_DUx2.nc", "FETOTSRF", "FESOLSRF")
 #coords_wide.med.v1 <- result[[1]]
 #coords_wide.sol.med.v1 <- result[[2]]
+
 # DERECHO VERSION -- TOTAL FE v1
-#result <- generate_mean_values_from_netcdf("C:\\Users\\heplaas\\OneDrive - North Carolina State University\\Collaborations\\Coal Fly Ash\\data\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL0.2-WOOD10-OIL38.cam.h2.2009-2011_PD.nc", "FETOTSRF", "FESOLSRF")
+#result <- generate_median_values_from_netcdf("C:\\Users\\heplaas\\OneDrive - North Carolina State University\\Collaborations\\Coal Fly Ash\\data\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL0.2-WOOD10-OIL38.cam.h2.2009-2011_PD.nc", "FETOTSRF", "FESOLSRF")
 #coords_wide.med.v1 <- result[[1]]
 #coords_wide.sol.med.v1 <- result[[2]]
 
 # v2 (PD) INDCOAL0.2-RESICOAL33-WOOD10-OIL38-FINEFIRE33
 # recall that these labels were flipped
-#result <- generate_mean_values_from_netcdf("C:\\Users\\heplaas\\OneDrive - North Carolina State University\\Collaborations\\Transient Run\\Test outputs\\FHIST_transient_test.cam.h2.2008-JAN.nc", "FETOTSRF", "FESOLSRF")
+#result <- generate_median_values_from_netcdf("C:\\Users\\heplaas\\OneDrive - North Carolina State University\\Collaborations\\Transient Run\\Test outputs\\FHIST_transient_test.cam.h2.2008-JAN.nc", "FETOTSRF", "FESOLSRF")
 # Cheyenne version
 #result <- read_in_netcdf("D:\\CoalFlyAsh\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL33-WOOD56-OIL38_2009-2011.h2.BBx1_ANx2_DUx2.nc", "FETOTSRF", "FESOLSRF")
 #coords_wide.med.v2 <- result[[1]]
 #coords_wide.sol.med.v2 <- result[[2]]
 
-result <- generate_mean_values_from_netcdf("D:\\CoalFlyAsh\\no_soil_state_firex1_runs\\no_soil_state_an+du_cheyenne_bb_derecho.h2_v2.nc", "FETOTSRF", "FESOLSRF")
+result <- generate_median_values_from_netcdf("C:\\Users\\heplaas\\OneDrive - North Carolina State University\\Collaborations\\Coal Fly Ash\\data\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL33-WOOD10-OIL38.cam.h2.2009-2011_PD.nc", "FETOTSRF", "FESOLSRF")
 coords_wide.med.v2 <- result[[1]]
 coords_wide.sol.med.v2 <- result[[2]]
 coords_wide.med.v2_sd <- result[[3]]
@@ -206,7 +207,7 @@ coords_wide.sol.med.v2_sd <- result[[4]]
 #coords_wide.med.v3 <- result[[1]]
 #coords_wide.sol.med.v3 <- result[[2]]
 
-result <- generate_mean_values_from_netcdf("D:\\CoalFlyAsh\\no_soil_state_firex1_runs\\no_soil_state_an+du_cheyenne_bb_derecho.h2_v3.nc", "FETOTSRF", "FESOLSRF")
+result <- generate_median_values_from_netcdf("C:\\Users\\heplaas\\OneDrive - North Carolina State University\\Collaborations\\Coal Fly Ash\\data\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL33-WOOD56-OIL38.cam.h2.2009-2011_PD.nc", "FETOTSRF", "FESOLSRF")
 coords_wide.med.v3 <- result[[1]]
 coords_wide.sol.med.v3 <- result[[2]]
 coords_wide.med.v3_sd <- result[[3]]
@@ -218,14 +219,14 @@ coords_wide.sol.med.v3_sd <- result[[4]]
 #coords_wide.med.v4 <- result[[1]]
 #coords_wide.sol.med.v4 <- result[[2]]
 
-result <- generate_mean_values_from_netcdf("D:\\CoalFlyAsh\\no_soil_state_firex1_runs\\no_soil_state_an+du_cheyenne_bb_derecho.h2_v4.nc", "FETOTSRF", "FESOLSRF")
+result <- generate_median_values_from_netcdf("C:\\Users\\heplaas\\OneDrive - North Carolina State University\\Collaborations\\Coal Fly Ash\\data\\CAM6-MIMI_2010CLIMO_INDCOAL0.05-RESICOAL33-WOOD56-OIL25.cam.h2.2009-2011_PD.nc", "FETOTSRF", "FESOLSRF")
 coords_wide.med.v4 <- result[[1]]
 coords_wide.sol.med.v4 <- result[[2]]
 coords_wide.med.v4_sd <- result[[3]]
 coords_wide.sol.med.v4_sd <- result[[4]]
 
 # get dimensions of netcdf files to store for later ----------------------------------------
-dim.file <- "D:\\CoalFlyAsh\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL0.2-WOOD10-OIL38_2009-2011.h2.BBx1_ANx2_DUx2.nc"
+dim.file <- "D:\\NCSU\\CoalFlyAsh\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL0.2-WOOD10-OIL38_2009-2011.h2.BBx1_ANx2_DUx2.nc"
 # dim file for Cheyenne run
 #dim.file <- "D:\\CoalFlyAsh\\CAM6-MIMI_2010CLIMO_INDCOAL0.2-RESICOAL0.2-WOOD10-OIL38_2009-2011MEAN.nc"
 nc_data <- nc_open(dim.file)
@@ -492,7 +493,7 @@ coal.ash.sims.1 <- coal.ash.sims %>%
   mutate(across(-c(region_4, region_4_combined), as.numeric)) %>%
   dplyr::select(-Latitude, -Longitude, -region_4_combined) %>%
   group_by(region_4) %>%
-  summarize(across(everything(), mean, na.rm = TRUE)) %>% 
+  summarize(across(everything(), median, na.rm = TRUE)) %>% 
   ungroup() %>% 
   full_join(region_count) %>% 
   mutate(count = as.numeric(count)) %>% drop_na()
@@ -500,7 +501,7 @@ coal.ash.sims.1 <- coal.ash.sims %>%
 indo_row <- coal.ash.sims.1 %>%
   filter(region_4 %in% c("BB", "AS")) %>%
   dplyr::select(-matches(c("count"))) %>% 
-  summarize(across(-region_4, mean, na.rm = TRUE)) %>%
+  summarize(across(-region_4, median, na.rm = TRUE)) %>%
   mutate(region_4 = "INDO") %>% 
   mutate(Obs_solubility = Obs_sol_Fe/Obs_Fe, 
          v1_solubility = v1_sol_Fe / v1_Fe, 
@@ -512,7 +513,7 @@ indo_row <- coal.ash.sims.1 %>%
 npac_row <- coal.ash.sims.1 %>%
   filter(region_4 %in% c("ENPAC", "WNPAC")) %>%
   dplyr::select(-matches(c("count"))) %>% 
-  summarize(across(-region_4, mean, na.rm = TRUE)) %>%
+  summarize(across(-region_4, median, na.rm = TRUE)) %>%
   mutate(region_4 = "NPAC") %>% 
   mutate(Obs_solubility = Obs_sol_Fe/Obs_Fe, 
          v1_solubility = v1_sol_Fe / v1_Fe, 
@@ -545,6 +546,11 @@ coal.ash.sims.2 <- coal.ash.sims.1 %>%
          ymin_solubility_v4 = (v4_solubility-v4_solubility_sd), ymax_solubility_v4 = (v4_solubility+v4_solubility_sd)) %>% 
   mutate(across(everything(), ~ ifelse(. <= 0, 0.000001, .)))
 
+coal.ash.sims.2.quick.stats <- coal.ash.sims.2 %>% mutate(diff_RESI = v2_sol_Fe - v1_sol_Fe)
+
+mean(coal.ash.sims.2.quick.stats$diff_RESI, na.rm = TRUE)
+sd(coal.ash.sims.2.quick.stats$diff_RESI, na.rm = TRUE)
+
 coal.ash.sims.no.npac <- coal.ash.sims.2 %>% filter(region_4 != "NPAC")
   
 create_soluble_iron_plot_single_points <- function(data, x_var, y_var, region, color_palette, count_col, x_label = "Observed Soluble [Fe] (ng m-3)", y_label = "Modeled Soluble [Fe] v10 (ng m-3)", plot_title = "Observed vs. Modeled Soluble Iron") {
@@ -567,7 +573,7 @@ create_soluble_iron_plot_single_points <- function(data, x_var, y_var, region, c
     theme(legend.position = "none")
 }
 
-create_soluble_iron_plot_single_points_v2 <- function(data, x_var, y_var, x_min, x_max, y_min, y_max, region, color_palette, count_col, x_label = "Observed Soluble [Fe] (ng m-3)", y_label = "Modeled Soluble [Fe] v1 (ng m-3)", plot_title = "Observed vs. Modeled Soluble Iron") {
+create_soluble_iron_plot_single_points_v2 <- function(data, x_var, y_var, x_min, x_max, y_min, y_max, region, color_palette, count_col, x_label = "Iron Observations (ng m-3)", y_label = "Modeled Iron (ng m-3)", plot_title = "[Soluble Iron]") {
   # Ensure count is numeric
   data[[count_col]] <- as.numeric(data[[count_col]])
   
@@ -577,9 +583,9 @@ create_soluble_iron_plot_single_points_v2 <- function(data, x_var, y_var, x_min,
     geom_abline(slope = 1, intercept = -1, color = "black", linetype = "dashed", size = 1, show.legend = F) +
     
     geom_errorbar(aes(x = .data[[x_var]], ymin = .data[[y_min]], ymax = .data[[y_max]]), 
-                  width = 0.1, size = 1.1, alpha = 0.6, color = "gray") +
+                  width = 0.1, size = 1.1, alpha = 0.5, color = "gray") +
     geom_errorbar(aes(y = .data[[y_var]], xmin = .data[[x_min]], xmax = .data[[x_max]]), 
-                  width = 0.1, size = 1.1, alpha = 0.6, color = "gray") +
+                  width = 0.1, size = 1.1, alpha = 0.5, color = "gray") +
     
     # Scatter points with dynamic aes mapping using .data[[...]] for variables
     geom_point(aes(x = .data[[x_var]], y = .data[[y_var]], 
@@ -589,15 +595,22 @@ create_soluble_iron_plot_single_points_v2 <- function(data, x_var, y_var, x_min,
     scale_color_manual(values = color_palette) +
     scale_size(range = c(4, 20)) +
     scale_shape_manual(values = India.shapes) +
-    scale_x_log10(labels = scales::number_format(accuracy = 0.001)) + 
-    scale_y_log10(labels = scales::number_format(accuracy = 0.001)) +
-    coord_cartesian(ylim = c(0.01, 100), xlim = c(0.01, 100)) +  
+    scale_x_log10(labels = scales::number_format(accuracy = 0.01)) + 
+    scale_y_log10(labels = scales::number_format(accuracy = 0.01)) +
+    coord_cartesian(ylim = c(0.001, 100), xlim = c(0.001, 100)) +  
     
     theme_minimal() +
     theme(legend.position = "none") +
-    theme(plot.title = element_text(size = 14, face = "bold")) +
+    theme(plot.title = element_text(size = 14, face = "bold"),
+          axis.title.x = element_text(size = 13, face = "bold"),
+          axis.title.y = element_text(size = 13, face = "bold"),
+          axis.text.x = element_text(size = 12, face = "bold"),
+          axis.text.y = element_text(size = 12, face = "bold")) +
     
-    labs(x = x_label, y = y_label, title = plot_title)
+    labs(x = x_label, y = y_label, title = plot_title) + 
+    theme(
+      
+    )
 }
 
 create_total_iron_plot_single_points <- function(data, x_var, y_var, region, color_palette, count_col, x_label = "Observed [Fe] (ng m-3)",  y_label = "Modeled [Fe] (ng m-3)", plot_title = "Observed vs. Modeled Total Iron") {
@@ -620,7 +633,7 @@ create_total_iron_plot_single_points <- function(data, x_var, y_var, region, col
     theme(legend.position = "none")
 }
 
-create_total_iron_plot_single_points_v2 <- function(data, x_var, y_var, x_min, x_max, y_min, y_max, region, color_palette, count_col, x_label = "Observed Total [Fe] (ng m-3)", y_label = "Modeled Total [Fe] v1 (ng m-3)", plot_title = "Observed vs. Modeled Total Iron") {
+create_total_iron_plot_single_points_v2 <- function(data, x_var, y_var, x_min, x_max, y_min, y_max, region, color_palette, count_col, x_label = "Iron Observations (ng m-3)", y_label = "Modeled Iron (ng m-3)", plot_title = "[Total Iron]") {
   # Ensure count is numeric
   data[[count_col]] <- as.numeric(data[[count_col]])
   
@@ -630,9 +643,9 @@ create_total_iron_plot_single_points_v2 <- function(data, x_var, y_var, x_min, x
     geom_abline(slope = 1, intercept = -1, color = "black", linetype = "dashed", size = 1, show.legend = F) +
     
     geom_errorbar(aes(x = .data[[x_var]], ymin = .data[[y_min]], ymax = .data[[y_max]]), 
-                  width = 0.1, size = 1.1, alpha = 0.6, color = "gray") +
+                  width = 0.1, size = 1.1, alpha = 0.5, color = "gray") +
     geom_errorbar(aes(y = .data[[y_var]], xmin = .data[[x_min]], xmax = .data[[x_max]]), 
-                  width = 0.1, size = 1.1, alpha = 0.6, color = "gray") +
+                  width = 0.1, size = 1.1, alpha = 0.5, color = "gray") +
     
     # Scatter points with dynamic aes mapping using .data[[...]] for variables
     geom_point(aes(x = .data[[x_var]], y = .data[[y_var]], 
@@ -642,13 +655,18 @@ create_total_iron_plot_single_points_v2 <- function(data, x_var, y_var, x_min, x
     scale_color_manual(values = color_palette) +
     scale_size(range = c(4, 20)) +
     scale_shape_manual(values = India.shapes) +
-    scale_x_log10(labels = scales::scientific_format(digits = 1)) + 
-    scale_y_log10(labels = scales::scientific_format(digits = 1)) +
-    coord_cartesian(ylim = c(.1, 10000), xlim = c(.1, 10000)) +  
+    scale_x_log10(labels = scales::number_format(accuracy = 0.01)) + 
+    scale_y_log10(labels = scales::number_format(accuracy = 0.01)) +
+    coord_cartesian(ylim = c(.01, 10000), xlim = c(.01, 10000)) +  
     
     theme_minimal() +
     theme(legend.position = "none") +
-    theme(plot.title = element_text(size = 14, face = "bold")) +
+    theme(plot.title = element_text(size = 14, face = "bold"),
+          axis.title.x = element_text(size = 13, face = "bold"),
+          axis.title.y = element_text(size = 13, face = "bold"),
+          axis.text.x = element_text(size = 12, face = "bold"),
+          axis.text.y = element_text(size = 12, face = "bold")) +
+    
     
     labs(x = x_label, y = y_label, title = plot_title)
 }
@@ -673,9 +691,8 @@ create_solubility_plot_single_points <- function(data, x_var, y_var, region, col
     theme(legend.position = "none")
 }
 
-
 create_solubility_plot_single_points_v2 <- function(data, x_var, y_var, x_min, x_max, y_min, y_max, region, color_palette, count_col,
-x_label = "Observed Fractional Fe Solubility (%)", y_label = "Modeled Fractional Fe Solubility (%)", plot_title = "Observed vs. Modeled Fe Solubility") {
+                                                    x_label = "Iron Observations (%)", y_label = "Modeled Fe (%)", plot_title = "Iron Solubility") {
   # Ensure count is numeric
   data[[count_col]] <- as.numeric(data[[count_col]])
   
@@ -685,9 +702,9 @@ x_label = "Observed Fractional Fe Solubility (%)", y_label = "Modeled Fractional
     geom_abline(slope = 1, intercept = -1, color = "black", linetype = "dashed", size = 1, show.legend = F) +
     
     geom_errorbar(aes(x = .data[[x_var]], ymin = .data[[y_min]], ymax = .data[[y_max]]), 
-                  width = 0.1, size = 1.1, alpha = 0.6, color = "gray") +
+                  width = 0.1, size = 1.1, alpha = 0.5, color = "gray") +
     geom_errorbar(aes(y = .data[[y_var]], xmin = .data[[x_min]], xmax = .data[[x_max]]), 
-                  width = 0.1, size = 1.1, alpha = 0.6, color = "gray") +
+                  width = 0.1, size = 1.1, alpha = 0.5, color = "gray") +
     
     # Scatter points with dynamic aes mapping using .data[[...]] for variables
     geom_point(aes(x = .data[[x_var]], y = .data[[y_var]], 
@@ -697,17 +714,20 @@ x_label = "Observed Fractional Fe Solubility (%)", y_label = "Modeled Fractional
     scale_color_manual(values = color_palette) +
     scale_size(range = c(4, 20)) +
     scale_shape_manual(values = India.shapes) +
-    scale_x_log10(labels = scales::scientific_format(digits = 1)) + 
-    scale_y_log10(labels = scales::scientific_format(digits = 1)) +
+    scale_x_log10(labels = scales::number_format(accuracy = 0.01)) + 
+    scale_y_log10(labels = scales::number_format(accuracy = 0.01)) +
     coord_cartesian(ylim = c(0.001, .2), xlim = c(0.001, .2)) +  
     
     theme_minimal() +
     theme(legend.position = "none") +
-    theme(plot.title = element_text(size = 14, face = "bold")) +
+    theme(plot.title = element_text(size = 14, face = "bold"),
+          axis.title.x = element_text(size = 13, face = "bold"),
+          axis.title.y = element_text(size = 13, face = "bold"),
+          axis.text.x = element_text(size = 12, face = "bold"),
+          axis.text.y = element_text(size = 12, face = "bold")) +
     
     labs(x = x_label, y = y_label, title = plot_title)
 }
-
 
 # list out the following (df, "x_var", "y_var", "x_min", "x_max", "y_min", "y_max", region, color_palette, "count")
 v1.dot.plot.sol <- create_soluble_iron_plot_single_points_v2(coal.ash.sims.2, "Obs_sol_Fe", "v1_sol_Fe", "xmin_sol", "xmax_sol", "ymin_sol_v1", "ymax_sol_v1", "region_4", India.palette, "count")
